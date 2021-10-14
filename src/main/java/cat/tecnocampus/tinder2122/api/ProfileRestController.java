@@ -3,9 +3,11 @@ package cat.tecnocampus.tinder2122.api;
 import cat.tecnocampus.tinder2122.api.frontendException.IncorrectRESTParameter;
 import cat.tecnocampus.tinder2122.application.TinderController;
 import cat.tecnocampus.tinder2122.application.dto.ProfileDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -32,7 +34,7 @@ public class ProfileRestController {
 	}
 
 	@GetMapping("/profiles")
-	public List<ProfileDTO> getProfiles(@RequestParam(defaultValue = "lazy") String mode) {
+	public List<ProfileDTO> getProfiles(@RequestParam(defaultValue = "lazy") @NotNull String mode) {
 		if (mode.equalsIgnoreCase("lazy"))
 			return tinderController.getProfilesLazy();
 		else {

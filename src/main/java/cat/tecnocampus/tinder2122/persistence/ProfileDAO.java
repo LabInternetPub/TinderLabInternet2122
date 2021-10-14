@@ -58,7 +58,7 @@ public class ProfileDAO implements cat.tecnocampus.tinder2122.application.Profil
 	public ProfileDTO getProfileLazy(String id) {
 		final String queryProfileLazy = "select id, email, nickname, gender, attraction, passion from tinder_user where id = ?";
 		try {
-			return jdbcTemplate.queryForObject(queryProfileLazy, new Object[]{id}, profileRowMapperLazy);
+			return jdbcTemplate.queryForObject(queryProfileLazy, profileRowMapperLazy, id);
 		} catch (EmptyResultDataAccessException e) {
 			throw new ProfileNotFound(id);
 		}
