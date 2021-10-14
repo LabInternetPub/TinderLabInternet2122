@@ -25,6 +25,7 @@ public class ProfileDAO implements cat.tecnocampus.tinder2122.application.Profil
 
 	private JdbcTemplate jdbcTemplate;
 
+	//Don't use the plain RowMapper
 	private final RowMapper<ProfileDTO> profileRowMapperLazy = (resultSet, i) -> {
 		ProfileDTO profile = new ProfileDTO();
 
@@ -38,16 +39,17 @@ public class ProfileDAO implements cat.tecnocampus.tinder2122.application.Profil
 		return profile;
 	};
 
+	//You can use the SimpleFlatMapper library instead
 	ResultSetExtractorImpl<ProfileDTO> profilesRowMapper =
 			JdbcTemplateMapperFactory
 					.newInstance()
-					.addKeys("id")
+					.addKeys("id", "likes_target_id")
 					.newResultSetExtractor(ProfileDTO.class);
 
 	RowMapperImpl<ProfileDTO> profileRowMapper =
 			JdbcTemplateMapperFactory
 					.newInstance()
-					.addKeys("id")
+					.addKeys("id", "likes_target_id")
 					.newRowMapper(ProfileDTO.class);
 
 	public ProfileDAO(JdbcTemplate jdbcTemplate) {
@@ -82,9 +84,8 @@ public class ProfileDAO implements cat.tecnocampus.tinder2122.application.Profil
 		List<ProfileDTO> result;
 		try {
 			result = jdbcTemplate.query(queryProfile, profilesRowMapper, id);
-			cleanEmptyLikes(result.get(0));
 			return result.get(0);
-		} catch (EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException | IndexOutOfBoundsException e) {
 			throw new ProfileNotFound(id);
 		}
 	}
@@ -100,16 +101,7 @@ public class ProfileDAO implements cat.tecnocampus.tinder2122.application.Profil
 
 		List<ProfileDTO> result;
 		result = jdbcTemplate.query(queryProfiles, profilesRowMapper);
-		result.stream().forEach(this::cleanEmptyLikes);
 		return result;
-	}
-
-	//Avoid list of candidates with an invalid like when the profile hasn't any
-	private void cleanEmptyLikes(ProfileDTO profile) {
-		boolean hasNullCandidates = profile.getLikes().stream().anyMatch(c -> c.getTarget().getId() == null);
-		if (hasNullCandidates) {
-			profile.setLikes(new ArrayList<>());
-		}
 	}
 
 	@Override
