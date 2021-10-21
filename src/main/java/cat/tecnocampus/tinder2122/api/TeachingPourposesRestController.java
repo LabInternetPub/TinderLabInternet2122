@@ -1,5 +1,7 @@
 package cat.tecnocampus.tinder2122.api;
 
+import cat.tecnocampus.tinder2122.application.ProfileDAO;
+import cat.tecnocampus.tinder2122.application.QuoteController;
 import cat.tecnocampus.tinder2122.application.TinderController;
 import cat.tecnocampus.tinder2122.application.dto.ProfileDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.constraints.Max;
 import java.util.List;
@@ -58,5 +61,16 @@ public class TeachingPourposesRestController {
         return jdbcTemplate.query(queryProfilesLazy, profileRowMapper);
     }
 
+    /* AOP Doing in wrong. Avoid the proxy provided by Spring Framework
 
+     */
+
+    @Autowired
+    private ProfileDAO profileDAO;
+
+    @GetMapping("/noAOP/profiles")
+    public List<ProfileDTO> noAOPprofiles() {
+        TinderController tinderControllerNotInjected = new TinderController(profileDAO);
+        return tinderControllerNotInjected.getProfilesLazy();
+    }
 }
