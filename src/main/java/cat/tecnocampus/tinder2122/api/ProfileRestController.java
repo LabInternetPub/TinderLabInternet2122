@@ -45,6 +45,11 @@ public class ProfileRestController {
 		}
 	}
 
+	@GetMapping("profilesByName/{name}")
+	public ProfileDTO getProfileByName(@PathVariable String name) {
+		return tinderController.getProfileByNameEager(name);
+	}
+
 	@GetMapping("profiles/me")
 	public ProfileDTO getMyProfile(Principal principal) {
 		return tinderController.getProfileByNameEager(principal.getName());

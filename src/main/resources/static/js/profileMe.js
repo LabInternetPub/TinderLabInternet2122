@@ -1,6 +1,8 @@
-$(document).ready(function () {
+function getProfile() {
+    let userName = $('#fname').val();
+    let password = $('#fpass').val();
     $.ajax({
-        headers: {'Authorization': localStorage.getItem('token')},
+        headers: {'Authorization': "Basic " + btoa(userName + ":" + password)},
         url: "http://localhost:8080/profiles/me",
         type: 'GET',
         dataType: 'json',
@@ -14,5 +16,5 @@ $(document).ready(function () {
         error: function() { alert('Failed!'); },
 
     });
-});
+};
 
