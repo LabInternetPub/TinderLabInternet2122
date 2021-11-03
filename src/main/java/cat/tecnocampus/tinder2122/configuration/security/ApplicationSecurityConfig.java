@@ -1,5 +1,8 @@
 package cat.tecnocampus.tinder2122.configuration.security;
 
+import cat.tecnocampus.tinder2122.configuration.security.jwt.JwtConfig;
+import cat.tecnocampus.tinder2122.configuration.security.jwt.JwtTokenVerifierFilter;
+import cat.tecnocampus.tinder2122.configuration.security.jwt.JwtUsernamePasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,10 +26,12 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USERS_QUERY = "select nickname, password, enabled from tinder_user where nickname = ?";
     private static final String AUTHORITIES_QUERY = "select username, role from authorities where username = ?";
 
+    private final JwtConfig jwtConfig;
 
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, DataSource dataSource) {
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, DataSource dataSource, JwtConfig jwtConfig) {
         this.passwordEncoder = passwordEncoder;
         this.dataSource = dataSource;
+        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -40,9 +45,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
 
                 .and()
-                .httpBasic()
+                .addFilter(new JwtUsernamePasswordAuthenticationFilter(authenticationManager(), jwtConfig))
+                .addFilterAfter(new JwtTokenVerifierFilter(jwtConfig), JwtUsernamePasswordAuthenticationFilter.class)
 
-                .and()
                 .csrf().disable()
                 .cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
