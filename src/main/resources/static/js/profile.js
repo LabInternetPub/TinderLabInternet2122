@@ -1,9 +1,9 @@
-function getProfileByName() {
-    let userName = $('#fname').val();
-    let password = $('#fpass').val();
+var userId = "7d045dd1-0088-4282-86e5-38f336ef05f2";
+
+$(document).ready(function () {
     $.ajax({
-        headers: {'Authorization': "Basic " + btoa(userName + ":" + password)},
-        url: "http://localhost:8080/profilesByName/" + userName,
+        headers: {'Authorization': localStorage.getItem('token')},
+        url: "http://localhost:8080/profiles/" + userId,
         type: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -16,5 +16,5 @@ function getProfileByName() {
         error: function() { alert('Failed!'); },
 
     });
-};
+});
 

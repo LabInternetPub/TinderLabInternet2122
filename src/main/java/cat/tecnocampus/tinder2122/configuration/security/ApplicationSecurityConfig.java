@@ -4,6 +4,7 @@ import cat.tecnocampus.tinder2122.configuration.security.jwt.JwtConfig;
 import cat.tecnocampus.tinder2122.configuration.security.jwt.JwtTokenVerifierFilter;
 import cat.tecnocampus.tinder2122.configuration.security.jwt.JwtUsernamePasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,6 +41,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers( "/", "index", "/css/*", "/js/*", "/*.html").permitAll()
                 .antMatchers("/profiles/me/**", "/quotes/**").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/profiles").authenticated() //.permitAll() //.hasRole("ADMIN")
                 .antMatchers("/profiles/**", "/profilesByName/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
